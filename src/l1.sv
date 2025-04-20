@@ -1,7 +1,7 @@
 module l1 #(
     parameter LINE_SIZE  = 16,
     parameter INDEX_SIZE = 4,
-    parameter TAG_SIZE   = 2,
+    parameter TAG_SIZE   = 28,
     parameter WORD_SIZE  = 32
 ) (
     input clk,
@@ -37,6 +37,7 @@ module l1 #(
       hit_or_miss <= 0;
     end  // cycle 2, check hit or miss
     else begin
+      cycle <= 0;
       if (wr_en) begin
         hit_or_miss <= 1;
         l1_cache[index] <= {1'b1, tag, data};
@@ -48,7 +49,7 @@ module l1 #(
           hit_or_miss <= 0;
           data_out <= 0;
         end  // check if the tag matches
-        else if (l1_cache[index][TAG_SIZE+WORD_SIZE] == 1 && 
+        else if (l1_cache[index][TAG_SIZE+WORD_SIZE] == 1 &&
                  l1_cache[index][TAG_SIZE+WORD_SIZE-1:WORD_SIZE] == tag)
         begin
           hit_or_miss <= 1;

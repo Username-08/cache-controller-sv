@@ -1,7 +1,7 @@
 module l2 #(
     parameter LINE_SIZE  = 16,
     parameter INDEX_SIZE = 4,
-    parameter TAG_SIZE   = 2,
+    parameter TAG_SIZE   = 26,
     parameter SET_SIZE   = 4,
     // parameter SET_BIT = 2,
     parameter WORD_SIZE  = 32
@@ -41,8 +41,8 @@ module l2 #(
       hit_or_miss <= 0;
       data_out <= 0;
     end  // cycle 2, check hit or miss
-
     else begin
+      cycle <= 0;
       if (wr_en) begin
         hit_or_miss <= 1;
         // check which set is empty
@@ -58,7 +58,7 @@ module l2 #(
       else begin
         // find set with valid bit that matches tag
         for (int i = 0; i < SET_SIZE; i++) begin
-          if (l2_cache[index][i][TAG_SIZE+WORD_SIZE] == 1 && 
+          if (l2_cache[index][i][TAG_SIZE+WORD_SIZE] == 1 &&
               l2_cache[index][i][TAG_SIZE+WORD_SIZE-1:WORD_SIZE] == tag) begin
             // write data to output
             hit_or_miss <= 1;
