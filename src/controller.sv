@@ -59,42 +59,43 @@ module controller #(
       l2_counter <= 0;
       data_out   <= 0;
       addr_prev  <= 0;
-    end
-    if (addr != addr_prev) begin
-      l1_counter <= 0;
-      l2_counter <= 0;
-      addr_prev  <= addr;
-    end  // controller logic here
-         // access l1 cache first
-    else if (wr_en) begin
-      // check if l1 and l2 have finished operating
-      if (l1_counter < L1_DELAY) l1_counter <= l1_counter + 1;
-      if (l2_counter < L2_DELAY) l2_counter <= l2_counter + 1;
-
-      // l1 and l2 have set outputs
-      if (l1_counter == L1_DELAY && l2_counter == L2_DELAY) begin
-        data_out   <= data;
-        l1_counter <= 0;
-        l2_counter <= 0;
-      end
     end else begin
-      // read operation
-      // check if l1 and l2 have finished operating
-      if (l1_counter < L1_DELAY) l1_counter <= l1_counter + 1;
-      if (l2_counter < L2_DELAY) l2_counter <= l2_counter + 1;
-
-      // l1 and l2 have set outputs
-      if (l1_counter == L1_DELAY && l2_counter == L2_DELAY) begin
+      if (addr != addr_prev) begin
         l1_counter <= 0;
         l2_counter <= 0;
+        addr_prev  <= addr;
+      end  // controller logic here
+         // access l1 cache first
+      else if (wr_en) begin
+        // check if l1 and l2 have finished operating
+        if (l1_counter < L1_DELAY) l1_counter <= l1_counter + 1;
+        if (l2_counter < L2_DELAY) l2_counter <= l2_counter + 1;
 
-        if (l1_hit) begin
-          data_out <= l1_out;
-        end else if (l2_hit) begin
-          data_out <= l2_out;
-        end else begin
-          // l1 and l2 misses, read from memory
-          data_out <= mem_out;
+        // l1 and l2 have set outputs
+        if (l1_counter == L1_DELAY && l2_counter == L2_DELAY) begin
+          data_out   <= data;
+          l1_counter <= 0;
+          l2_counter <= 0;
+        end
+      end else begin
+        // read operation
+        // check if l1 and l2 have finished operating
+        if (l1_counter < L1_DELAY) l1_counter <= l1_counter + 1;
+        if (l2_counter < L2_DELAY) l2_counter <= l2_counter + 1;
+
+        // l1 and l2 have set outputs
+        if (l1_counter == L1_DELAY && l2_counter == L2_DELAY) begin
+          l1_counter <= 0;
+          l2_counter <= 0;
+
+          if (l1_hit) begin
+            data_out <= l1_out;
+          end else if (l2_hit) begin
+            data_out <= l2_out;
+          end else begin
+            // l1 and l2 misses, read from memory
+            data_out <= mem_out;
+          end
         end
       end
     end
